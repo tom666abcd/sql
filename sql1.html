@@ -1,0 +1,113 @@
+    <!--    编写查询sql语句-->
+
+    <!--    resultMap表示返回结果的数据类型-->
+
+    <select id="selectAll" resultMap="bookMap">
+
+        select * from book INNER JOIN type on book.type_id=type.id
+
+    </select>
+
+    <!--    编写插入sql语句-->
+
+    <!--    parameterType表示接收到的数据类型要和实体类的数据类型一致-->
+
+    <insert id="insert" parameterType="com.ssm01.enity.Book" useGeneratedKeys="true" keyProperty="id">
+
+        INSERT
+
+        INTO
+
+            book(book_name,book_author,book_buy_time,type_id,bookImage)
+
+        values(#{book_name},#{book_author},#{book_buy_time},#{type_id},#{bookImage})
+
+    </insert>
+
+<!--  定义删除sql语句  -->
+
+    <delete id="delete">
+
+        delete from book where id = #{id}
+
+    </delete>
+
+<!--  通过id删除  -->
+
+    <delete id="deleteByIds">
+
+        DELETE FROM book WHERE id IN
+
+        <foreach item="id" collection="array" open="(" close=")" separator=",">
+
+            #{id}
+
+        </foreach>
+
+    </delete>
+
+<!--  编写修改sql语句，paramterType表示输入的参数类型 useGeneratedKeys:是否自动生成主键值 keyProperty:用于指定将数据库自动生成的主键值设置到哪个对象的属性上  -->
+
+    <update id="update" parameterType="com.ssm01.enity.Book" useGeneratedKeys="true" keyProperty="userId">
+
+        update book set book_name=#{book_name}, book_author=#{book_author}, book_buy_time=#{book_buy_time}, type_id=#{type_id} where book.id=#{id}
+
+    </update>
+
+<!--  通过id查询  -->
+
+    <select id="selectById" resultMap="bookMap">
+
+        select * from book INNER JOIN type on book.type_id=type.id where book.id=#{id}
+
+    </select>
+
+<!--  通过名称查询  -->
+
+    <select id="selectByName" resultMap="bookMap">
+
+        select * from book where book_name=#{book_name}
+
+    </select>
+
+<!--  查询类型sql  -->
+
+    <select id="selectByTypeName" resultMap="com.ssm01.mapper.TypesMapper.typeMap">
+
+        select * from type where type_name=#{type_name}
+
+    </select>
+
+<!--  分页查询sql  -->
+
+    <select id="selectByPageAndCondition" resultMap="bookMap">
+
+        select *
+
+        from book
+
+        <where>
+
+            <if test="book.book_name != null and book.book_name != '' ">
+
+                and name like #{book.book_name}
+
+            </if>
+
+            <if test="book.book_author != null and book.book_author != '' ">
+
+                and book_author = #{book.book_author}
+
+            </if>
+
+            <if test="book.book_buy_time != null">
+
+                and book_buy_time = #{book.book_buy_time}
+
+            </if>
+
+        </where>
+
+        limit #{begin} , #{size}
+
+    </select>
